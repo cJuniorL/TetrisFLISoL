@@ -1,0 +1,16 @@
+LevelManage 
+
+	estado = {0 ,1, 2}
+	0 : O jogo está na tela de menu inicial
+	1 : O jogo está em uma partida
+	2 : O jogo está pausado
+
+Pedra
+	tipos = {0 ...}
+	0 : quadrado :: azul
+	1 : L invertido:: vermelho
+	2 : L : amarelo
+	3 : T : verde
+	4 : z : laranja
+	5 : z invertido : marro
+	6 : | : roxo
