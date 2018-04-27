@@ -16,8 +16,8 @@ function LevelManage:iniciar()
 end
 
 function LevelManage:iniciarPartida()
-	self.estado = 1
 	self.partida = Partida:new()
+	self.estado = 1
 end
 
 function LevelManage:desenhar()

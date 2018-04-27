@@ -14,49 +14,52 @@ Pedra = {
 	cor = {0, 0, 0}
 }
 function Pedra:new(tipo)
+	--tipo = 3 proxTipo 5
 	self.tipo = tipo
+	self.proxTipo = math.random(0,6)
 	self.pos = 0
+	self.blocos = {}
 	if (tipo == 0) then
-		table.insert(self.blocos, Bloco(1,3))
-		table.insert(self.blocos, Bloco(1,4))
-		table.insert(self.blocos, Bloco(2,3))
-		table.insert(self.blocos, Bloco(2,4))
-		self.cor = {0,76, 153}
-	elseif (tipo == 1) then
-		table.insert(self.blocos, Bloco(1,3))
+		table.insert(self.blocos, Bloco(0,4))
+		table.insert(self.blocos, Bloco(0,5))
 		table.insert(self.blocos, Bloco(1,4))
 		table.insert(self.blocos, Bloco(1,5))
-		table.insert(self.blocos, Bloco(2,4))
+		self.cor = {0,76, 153}
+	elseif (tipo == 1) then
+		table.insert(self.blocos, Bloco(0,4))
+		table.insert(self.blocos, Bloco(0,5))
+		table.insert(self.blocos, Bloco(0,6))
+		table.insert(self.blocos, Bloco(1,5))
 		self.cor = {255, 0, 0}
 	elseif (tipo == 2) then
-		table.insert(self.blocos, Bloco(1,2))
-		table.insert(self.blocos, Bloco(2,2))
-		table.insert(self.blocos, Bloco(3,2))
-		table.insert(self.blocos, Bloco(3,3))
+		table.insert(self.blocos, Bloco(-1,4))
+		table.insert(self.blocos, Bloco(-0,4))
+		table.insert(self.blocos, Bloco(1,4))
+		table.insert(self.blocos, Bloco(1,5))
 		self.cor = {255, 255, 0}
 	elseif (tipo == 3) then
-		table.insert(self.blocos, Bloco(1,2))
-		table.insert(self.blocos, Bloco(2,2))
-		table.insert(self.blocos, Bloco(3,2))
-		table.insert(self.blocos, Bloco(3,1))
+		table.insert(self.blocos, Bloco(-1,5))
+		table.insert(self.blocos, Bloco(0,5))
+		table.insert(self.blocos, Bloco(1,5))
+		table.insert(self.blocos, Bloco(1,4))
 		self.cor = { 0, 255, 0}
 	elseif (tipo == 4) then
-		table.insert(self.blocos, Bloco(1,2))
-		table.insert(self.blocos, Bloco(1,3))
-		table.insert(self.blocos, Bloco(2,3))
-		table.insert(self.blocos, Bloco(2,4))
+		table.insert(self.blocos, Bloco(0,4))
+		table.insert(self.blocos, Bloco(0,5))
+		table.insert(self.blocos, Bloco(1,5))
+		table.insert(self.blocos, Bloco(1,6))
 		self.cor = { 255, 128, 0 }
 	elseif (tipo == 5) then
+		table.insert(self.blocos, Bloco(0,6))
+		table.insert(self.blocos, Bloco(0,5))
+		table.insert(self.blocos, Bloco(1,5))
 		table.insert(self.blocos, Bloco(1,4))
-		table.insert(self.blocos, Bloco(1,3))
-		table.insert(self.blocos, Bloco(2,3))
-		table.insert(self.blocos, Bloco(2,2))
 		self.cor = { 255, 128, 0 }
 	elseif (tipo == 6) then
-		table.insert(self.blocos, Bloco(1,4))
-		table.insert(self.blocos, Bloco(2,4))
-		table.insert(self.blocos, Bloco(3,4))
-		table.insert(self.blocos, Bloco(4,4))
+		table.insert(self.blocos, Bloco(-2,5))
+		table.insert(self.blocos, Bloco(-1,5))
+		table.insert(self.blocos, Bloco(0,5))
+		table.insert(self.blocos, Bloco(1,5))
 		self.cor = { 255, 0, 0}
 	end
 	return self
@@ -69,7 +72,7 @@ function Pedra:desenhar()
 	end
 end
 
-function Pedra:girar()
+function Pedra:girar(tabuleiro)
 	local pos = {}
 	pos[1] = {}
 	pos[2] = {}
@@ -213,12 +216,10 @@ function Pedra:girar()
 			pos[3][2] = self.blocos[4].posJ - 2
 		end
 	end
-	if verificarPos(pos) then
-		if self.tipo ~= 0 then
-			if self.tipo == 6 then
-				lovebird.print(self.pos)
+	if self.tipo > 0 then
+		if verificarPos(pos, tabuleiro) then
+			if self.tipo > 3 then
 				self.pos = self.pos == 1 and 0 or (self.pos + 1)
-				lovebird.print(self.pos)
 			else
 				self.pos = self.pos == 3 and 0 or (self.pos + 1)
 			end
@@ -233,14 +234,31 @@ function Pedra:girar()
 	end
 end
 
-function verificarPos(pos)
-	return true
+function verificarPos(pos, tabuleiro)
+	local virar = true
+	for i = 1, 3, 1 do
+		if pos[i][1] > 0 then
+			if pos[i][2] == 0 or pos[i][2] > 9 or pos[i][1] > 19 then
+				virar = false
+			elseif tabuleiro[pos[i][1]][pos[i][2]][1] == 1  then
+				virar = false
+			end
+		end
+	end
+	return virar
 end
 
-function Pedra:update(dt, tabuleiro)
-	local pedraRemovida = false
+function Pedra:update(dt, tabuleiro, tempoD)
+	lovebird.print(dt)
+	local retornoPedraLinhas = {} --[1] pedra [2] linha [3] comando
+	retornoPedraLinhas[1] = false
+	retornoPedraLinhas[2] = 0
+	retornoPedraLinhas[3] = ""
+	if love.keyboard.isDown("escape") then
+		retornoPedraLinhas[3] = "ESC"
+	end
 	if love.keyboard.isDown("w") and self.tempoGiro > 0.15 then
-		self:girar()
+		self:girar(tabuleiro)
 		self.tempoGiro = 0
 	else
 		self.tempoGiro = self.tempoGiro + dt
@@ -285,7 +303,7 @@ function Pedra:update(dt, tabuleiro)
 		self.tempoMovimento = self.tempoMovimento + dt
 	end
 	
-	if self.tempoDescida > 0.4 then
+	if ((self.tempoDescida > tempoD) or (love.keyboard.isDown("s") and self.tempoDescida > tempoD * 0.2)) then
 		self.tempoDescida = 0
 		local descida = true
 		for i = 1, table.getn(self.blocos), 1 do
@@ -301,11 +319,10 @@ function Pedra:update(dt, tabuleiro)
 			for i = 1, table.getn(self.blocos), 1 do
 				self.blocos[i]:inserirPedra(tabuleiro, self.cor)
 			end
-			self.blocos = {}
-			pedraRemovida = true
+			self.blocos = nil
+			retornoPedraLinhas[1] = true
 			for i = 1, table.getn(tabuleiro), 1 do
 				local linhaCompleta = true
-		
 				for j = 1, table.getn(tabuleiro[i]), 1 do
 					if tabuleiro[i][j][1] ~= 1 then
 						linhaCompleta = false
@@ -313,6 +330,7 @@ function Pedra:update(dt, tabuleiro)
 					end
 				end	
 				if linhaCompleta == true then
+					retornoPedraLinhas[2] = retornoPedraLinhas[2] + 1	
 					for i2 = i, 1, -1 do
 						for j = 1, #tabuleiro[i2], 1 do
 							tabuleiro[i2][j] = tabuleiro[i2 - 1][j]
@@ -324,6 +342,6 @@ function Pedra:update(dt, tabuleiro)
 	else 
 		self.tempoDescida = self.tempoDescida + dt
 	end
-	return pedraRemovida
+	return retornoPedraLinhas
 end
 
