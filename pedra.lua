@@ -317,7 +317,9 @@ function Pedra:update(dt, tabuleiro, tempoD)
 			end 
 		else
 			for i = 1, table.getn(self.blocos), 1 do
-				self.blocos[i]:inserirPedra(tabuleiro, self.cor)
+				if retornoPedraLinhas[3] == "" then
+					retornoPedraLinhas[3] = self.blocos[i]:inserirPedra(tabuleiro, self.cor)
+				end
 			end
 			self.blocos = nil
 			retornoPedraLinhas[1] = true

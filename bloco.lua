@@ -4,6 +4,7 @@ function Bloco(i,j)
 	return {
 		posI = i;
 		posJ = j;
+
 		desenhar = function(self, cor)
 			love.graphics.setColor(cor[1], cor[2], cor[3])
 			if self.posI > 0 then
@@ -46,8 +47,15 @@ function Bloco(i,j)
 		end;
 
 		inserirPedra = function (self, tabuleiro, cor)
-			tabuleiro[self.posI][self.posJ][1] = 1
-			tabuleiro[self.posI][self.posJ][2] = cor
+			local gameOver
+			if self.posI > 0 then
+				tabuleiro[self.posI][self.posJ][1] = 1
+				tabuleiro[self.posI][self.posJ][2] = cor
+				gameOver = ""
+			else
+				gameOver = "ESC"
+			end
+			return gameOver
 		end;
 
 		moverDireita = function (self, tabuleiro)

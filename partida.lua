@@ -30,7 +30,7 @@ function Partida:desenhar()
 	desenharFundo()
 	love.graphics.setFont(font)
 	love.graphics.print("Prox. Pedra", 340, 20)
-	love.graphics.print(self.pontos, 340, 500)
+	love.graphics.print("Pontos: " .. self.pontos, 340, 210)
 	desenharProxPedra(self.proxPedra)
 	for i in ipairs(self.tabuleiro) do
 		love.graphics.setColor(0,0,0)

@@ -11,7 +11,6 @@ LevelManage = {
 
 function LevelManage:iniciar()
 	self.estado = 0
-	self.batata = "x"
 	return self
 end
 
